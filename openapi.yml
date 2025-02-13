@@ -1,0 +1,188 @@
+openapi: 3.0.1
+info:
+  title: API Gateway Docs
+  description: Documentação unificada dos microserviços
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8085
+    description: API Gateway
+
+paths:
+  /auth/login:
+    post:
+      summary: Autentica um usuário e retorna um JWT token.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
+              required:
+                - login
+                - password
+      responses:
+        "200":
+          description: User authenticated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "401":
+          description: Unauthorized - Invalid Credentials.
+
+  /auth/register:
+    post:
+      summary: Registra um novo usuário no sistema.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - login
+                - email
+                - password
+      responses:
+        "201":
+          description: User created successfully.
+        "400":
+          description: Bad Request - The login is already in use.
+
+  /products:
+    post:
+      summary: Cria um novo produto.
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                category:
+                  type: string
+                quantity:
+                  type: integer
+                price:
+                  type: integer
+                notes:
+                  type: string
+      responses:
+        "201":
+          description: Product created successfully.
+
+    get:
+      summary: Retorna uma lista de todos os produtos.
+      tags:
+        - Product
+      responses:
+        "200":
+          description: Lista de produtos.
+
+  /payments:
+    post:
+      summary: Cria um novo pagamento.
+      tags:
+        - Payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                orderId:
+                  type: string
+                amount:
+                  type: number
+                status:
+                  type: string
+      responses:
+        "200":
+          description: Payment created successfully.
+
+    get:
+      summary: Retorna todos os pagamentos.
+      tags:
+        - Payment
+      responses:
+        "200":
+          description: Lista de pagamentos.
+
+  /payments/{id}:
+    get:
+      summary: Retorna um pagamento pelo ID.
+      tags:
+        - Payment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Payment details.
+        "404":
+          description: Payment not found.
+
+  /payments/user/{userId}:
+    get:
+      summary: Retorna todos os pagamentos de um usuário.
+      tags:
+        - Payment
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lista de pagamentos do usuário.
+
+  /payments/{id}/status:
+    patch:
+      summary: Atualiza o status de um pagamento.
+      tags:
+        - Payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        "200":
+          description: Payment status updated successfully.
+        "404":
+          description: Payment not found.
